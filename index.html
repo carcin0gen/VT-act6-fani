@@ -2,98 +2,210 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard Avanzado D3.js</title>
+    <title>Dashboard con Efectos Especiales</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #000;
+            color: white;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Cabecera con GIF */
+        .header-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            overflow: hidden;
+        }
+
+        .header-gif {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .header-title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem;
+            font-weight: bold;
+            color: #f69117;
+            text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.8);
+            text-align: center;
+            width: 100%;
+            z-index: 10;
+        }
+
+        /* Efecto de hojas cayendo */
+        .leaves {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .leaf {
+            position: absolute;
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.7;
+        }
+
+        /* Contenido principal */
         .dashboard {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            padding: 20px;
-            font-family: Arial, sans-serif;
             max-width: 1200px;
             margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+            background-color: rgba(0, 0, 0, 0.7);
         }
+
         .chart-container {
-            border: 1px solid #ddd;
-            padding: 15px;
-            border-radius: 8px;
-            background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: rgba(30, 30, 30, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(241, 145, 23, 0.2);
+            border: 1px solid #f69117;
         }
+
         .chart-title {
-            font-size: 1.2em;
-            margin-bottom: 10px;
-            color: ##f69117;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #f69117;
             text-align: center;
             font-weight: bold;
         }
+
         svg {
+            background: rgba(20, 20, 20, 0.5);
+            border-radius: 8px;
             display: block;
             margin: 0 auto;
-            background: #f9f9f9;
         }
-        .chart-description {
-            text-align: center;
-            margin-top: 10px;
-            font-family: Arial, sans-serif;
-            color: ##f69117;
-            font-size: 0.9em;
-        }
-        @media (max-width: 768px) {
-            .dashboard {
-                grid-template-columns: 1fr;
-            }
+
+        /* Efecto de scroll */
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
     </style>
 </head>
 <body>
-    <h1 style="text-align: center; margin: 20px 0; color: #f69117;">Dashboard Interactivo D3.js de Fani :3</h1>
-    
-    <div class="dashboard">
-        <!-- Coordenadas del Mouse -->
-        <div class="chart-container">
-            <div class="chart-title">Coordenadas del Mouse</div>
-            <svg id="coords" width="300" height="300"></svg>
-        </div>
+    <!-- Cabecera con GIF y título -->
+    <div class="header-container sticky-header">
+        <img src="https://i.gifer.com/2Oqq.gif" alt="Cabecera animada" class="header-gif">
+        <h1 class="header-title">DASHBOARD INTERACTIVO</h1>
+    </div>
 
+    <!-- Efecto de hojas cayendo -->
+    <div class="leaves" id="leaves-container"></div>
+
+    <!-- Contenido del dashboard -->
+    <div class="dashboard">
         <!-- Brush Linking -->
         <div class="chart-container">
-            <div class="chart-title">Brush Linking Interactivo</div>
-            <div style="display: flex; justify-content: center;">
-                <svg id="brush1" width="300" height="300" style="margin-right: 10px;"></svg>
-                <svg id="brush2" width="300" height="300"></svg>
+            <div class="chart-title">VISUALIZACIÓN DE DATOS</div>
+            <div style="display: flex; justify-content: center; flex-wrap: wrap;">
+                <svg id="brush1" width="400" height="400" style="margin-right: 10px;"></svg>
+                <svg id="brush2" width="400" height="400"></svg>
             </div>
         </div>
 
-        <!-- Drag & Drop -->
-        <div class="chart-container">
-            <div class="chart-title">Drag & Drop de Elementos</div>
-            <svg id="dragdrop" width="300" height="200"></svg>
-        </div>
+        <!-- Otras visualizaciones -->
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+            <div class="chart-container">
+                <div class="chart-title">COORDENADAS</div>
+                <svg id="coords" width="300" height="300"></svg>
+            </div>
 
-        <!-- Stagger Effect -->
-        <div class="chart-container">
-            <div class="chart-title">Efecto Stagger Animado</div>
-            <svg id="stagger" width="300" height="200"></svg>
-            <div class="chart-description">Haz clic en el gráfico para ver el efecto de animación</div>
-        </div>
+            <div class="chart-container">
+                <div class="chart-title">DRAG & DROP</div>
+                <svg id="dragdrop" width="300" height="200"></svg>
+            </div>
 
-        <!-- Lissajous -->
-        <div class="chart-container" style="grid-column: span 2;">
-            <div class="chart-title">Curva de Lissajous</div>
-            <svg id="lissajous" width="600" height="300"></svg>
+            <div class="chart-container">
+                <div class="chart-title">EFECTO STAGGER</div>
+                <svg id="stagger" width="300" height="200"></svg>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">LISSAJOUS</div>
+                <svg id="lissajous" width="300" height="200"></svg>
+            </div>
         </div>
     </div>
 
     <script>
-    // 1. Coordenadas del Mouse
+    // Efecto de hojas cayendo
+    function createLeaves() {
+        const container = d3.select("#leaves-container");
+        const leafCount = 30;
+        const leafTypes = 3;
+        
+        for (let i = 0; i < leafCount; i++) {
+            const leaf = container.append("div")
+                .attr("class", "leaf")
+                .style("background-image", `url('https://www.freepnglogos.com/uploads/leaf-png/leaf-png-clipart-png-image-download-1.png')`)
+                .style("width", `${10 + Math.random() * 30}px`)
+                .style("height", `${10 + Math.random() * 30}px`)
+                .style("left", `${Math.random() * 100}vw`)
+                .style("top", `${-50 - Math.random() * 50}px`)
+                .style("transform", `rotate(${Math.random() * 360}deg)`);
+            
+            animateLeaf(leaf.node());
+        }
+    }
+
+    function animateLeaf(leaf) {
+        const duration = 10000 + Math.random() * 15000;
+        const xMovement = (Math.random() - 0.5) * 200;
+        
+        anime({
+            targets: leaf,
+            translateY: `+=${window.innerHeight + 100}`,
+            translateX: `+=${xMovement}`,
+            rotate: `+=${360 * (2 + Math.random() * 3)}`,
+            duration: duration,
+            easing: 'linear',
+            complete: function() {
+                // Reiniciar la animación cuando la hoja llega al fondo
+                leaf.style.top = '-50px';
+                leaf.style.left = `${Math.random() * 100}vw`;
+                animateLeaf(leaf);
+            }
+        });
+    }
+
+    // Cargar anime.js para las animaciones
+    const animeScript = document.createElement('script');
+    animeScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js';
+    animeScript.onload = createLeaves;
+    document.head.appendChild(animeScript);
+
+    // Resto del código para las visualizaciones (igual que antes)
     function setupCoords() {
         const svg = d3.select("#coords");
         const text = svg.append('text')
             .attr('font-family', 'Arial')
             .attr('font-size', '12px')
-            .attr('fill', 'black');
+            .attr('fill', '#f69117');
 
         svg.on('mousemove', function(event) {
             const [x, y] = d3.pointer(event);
@@ -103,18 +215,16 @@
         }).on('mouseleave', () => text.text(''));
     }
 
-    // 2. Brush Linking
     function setupBrush() {
-        // Datos de ejemplo - reemplaza con tus datos reales
         const data = Array.from({length: 50}, () => ({
-            A: Math.random() * 280 + 10,
-            B: Math.random() * 280 + 10
+            A: Math.random() * 350 + 25,
+            B: Math.random() * 350 + 25
         }));
 
         const svg1 = d3.select("#brush1"), svg2 = d3.select("#brush2");
         const colorScale = d3.scaleLinear()
-            .domain([0, 150, 300])
-            .range(["green", "yellow", "red"]);
+            .domain([0, 200, 400])
+            .range(["#2ecc71", "#f1c40f", "#e74c3c"]);
 
         function updateCircles(svg, data, color) {
             svg.selectAll("circle").remove();
@@ -129,8 +239,8 @@
                 .attr("fill-opacity", 0.6);
         }
 
-        updateCircles(svg1, data, "blue");
-        updateCircles(svg2, data, "green");
+        updateCircles(svg1, data, "#3498db");
+        updateCircles(svg2, data, "#9b59b6");
 
         svg1.on("mousemove", function(event) {
             const [x, y] = d3.pointer(event);
@@ -142,10 +252,9 @@
         });
     }
 
-    // 3. Drag & Drop
     function setupDragDrop() {
         const svg = d3.select("#dragdrop");
-        const colors = ["red", "green", "blue"];
+        const colors = ["#f69117", "#3498db", "#2ecc71"];
         
         svg.selectAll("circle")
             .data(colors)
@@ -157,7 +266,7 @@
             .attr("fill", d => d)
             .call(d3.drag()
                 .on("start", function() {
-                    d3.select(this).attr("fill", "orange");
+                    d3.select(this).attr("fill", "#e74c3c");
                 })
                 .on("drag", function(event) {
                     d3.select(this)
@@ -169,7 +278,6 @@
                 }));
     }
 
-    // 4. Stagger Effect (Versión corregida)
     function setupStagger() {
         const svg = d3.select("#stagger");
         let ds1 = [2, 1, 3, 5, 7, 8, 9, 9, 9, 8, 7, 5, 3, 1, 2];
@@ -177,23 +285,20 @@
         const n = ds1.length;
         const mx = d3.max(d3.merge([ds1, ds2]));
         
-        // Ajustar escalas para el tamaño reducido
         const scX = d3.scaleLinear().domain([0, n]).range([20, 280]);
         const scY = d3.scaleLinear().domain([0, mx]).range([180, 20]);
 
-        // Crear barras iniciales
         svg.selectAll("line")
             .data(ds1)
             .enter()
             .append("line")
-            .attr("stroke", "red")
+            .attr("stroke", "#f69117")
             .attr("stroke-width", 10)
             .attr("x1", (d, i) => scX(i))
             .attr("y1", scY(0))
             .attr("x2", (d, i) => scX(i))
             .attr("y2", d => scY(d));
 
-        // Manejador de clic para animación
         svg.on("click", function(event) {
             [ds1, ds2] = [ds2, ds1];
             svg.selectAll("line")
@@ -205,17 +310,16 @@
         });
     }
 
-    // 5. Lissajous Curve (Versión corregida)
     function setupLissajous() {
         const svg = d3.select("#lissajous");
-        let lastX = 300, lastY = 150;
+        let lastX = 150, lastY = 75;
         const a = 1.9, b = 3.2;
         const omega = 2 * Math.PI / 10000;
         
         d3.timer(function(t) {
             const phi = omega * t;
-            const x = 300 + 200 * Math.cos(a * phi);
-            const y = 150 + 100 * Math.sin(b * phi);
+            const x = 150 + 100 * Math.cos(a * phi);
+            const y = 75 + 50 * Math.sin(b * phi + Math.PI/2);
             
             svg.selectAll("line")
                 .each(function() { this.bogus_opacity *= 0.99; })
@@ -229,7 +333,7 @@
                 .attr("y1", lastY)
                 .attr("x2", x)
                 .attr("y2", y)
-                .attr("stroke", "green")
+                .attr("stroke", "#f69117")
                 .attr("stroke-width", 2);
 
             lastX = x;
@@ -249,16 +353,4 @@
     });
     </script>
 </body>
-    <head> 
-        <title>Gif the fondo.</title> 
-        <style> 
-            body { 
-                background-image: url("https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiAnZjNyQR8l40NLglOiVeeH0_XXjKvzQpwnMOhYFjGakCHssKpCIxeKTj4Eee6gtZ52edmL_CNqthzMwKR53D60848FCmZOFrwkJ6JpL44WAZ9Si3bchHJrfOtmalC-Q3m75GPAtqsdcSM/s1600/gifs-animados-halloween-06113.gif"); 
-                background-position: center 25%; 
-                background-size: cover; 
-            } 
-        </style> 
-    </head> 
-    <body> 
-    </body>
 </html>
